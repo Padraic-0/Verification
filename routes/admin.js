@@ -451,7 +451,6 @@ router.post('/approve', async (req, res) => {
       return res.status(400).json({ error: 'Customer ID is required' });
     }
 
-    const customer = await shopifyClient.getCustomer(customerId);
     const metafields = await shopifyClient.getCustomerMetafields(customerId);
 
     const licenseFilename = metafields.metafields.find(
@@ -469,37 +468,10 @@ router.post('/approve', async (req, res) => {
       await fs.unlink(filePath).catch(err => console.error('File deletion error:', err));
     }
 
-    await resend.emails.send({
-      from: 'Verification <noreply@paddydemo12345678.xyz>',
-      to: customer.customer.email,
-      subject: 'Verification Approved - Welcome!',
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Verification Approved</title>
-          </head>
-          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background-color: #d4edda; padding: 20px; border-radius: 5px; border-left: 4px solid #28a745;">
-              <h2 style="color: #155724; margin-top: 0;">🎉 Verification Approved!</h2>
-              <p>Congratulations, ${customer.customer.first_name}!</p>
-              <p>Your medical license has been verified and your account has been approved.</p>
-              <p>You now have full access to our store.</p>
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="https://${process.env.SHOPIFY_STORE_URL}"
-                   style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
-                  Start Shopping
-                </a>
-              </div>
-              <p>Thank you for completing the verification process!</p>
-            </div>
-          </body>
-        </html>
-      `,
-    });
+    // Send Shopify account activation email so customer can set password and login
+    await shopifyClient.sendAccountActivationEmail(customerId);
 
-    res.json({ success: true, message: 'Customer approved successfully' });
+    res.json({ success: true, message: 'Customer approved and activation email sent' });
   } catch (error) {
     console.error('Approval error:', error);
     res.status(500).json({ error: 'Failed to approve customer' });

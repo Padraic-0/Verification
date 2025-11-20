@@ -138,6 +138,20 @@ class ShopifyClient {
   async searchCustomers(query) {
     return this.makeRequest(`/customers/search.json?query=${encodeURIComponent(query)}`);
   }
+
+  async sendAccountActivationEmail(customerId) {
+    return this.makeRequest(`/customers/${customerId}/send_invite.json`, {
+      method: 'POST',
+      body: JSON.stringify({
+        customer_invite: {
+          to: null,
+          from: null,
+          subject: null,
+          custom_message: 'Your medical professional verification has been approved! Click the link below to activate your account and set your password.'
+        }
+      }),
+    });
+  }
 }
 
 const shopifyClient = new ShopifyClient();

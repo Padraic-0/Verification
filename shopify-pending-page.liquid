@@ -1,0 +1,249 @@
+{% comment %}
+  Verification Pending Page
+
+  Instructions:
+  1. Go to Shopify Admin → Online Store → Pages
+  2. Create new page called "Verification Pending"
+  3. Switch to "Show HTML" mode
+  4. Paste this code
+  5. Save
+{% endcomment %}
+
+<style>
+  .pending-container {
+    max-width: 700px;
+    margin: 80px auto;
+    padding: 50px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  .pending-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+  }
+
+  .pending-container h1 {
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+
+  .pending-container .subtitle {
+    font-size: 18px;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+  }
+
+  .status-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin: 30px 0;
+  }
+
+  .status-box h2 {
+    margin: 0 0 15px 0;
+    font-size: 22px;
+  }
+
+  .status-pending {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .status-rejected {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  }
+
+  .info-list {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: left;
+    margin: 30px 0;
+  }
+
+  .info-list h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+
+  .info-list ul {
+    margin: 0;
+    padding-left: 25px;
+    color: #555;
+  }
+
+  .info-list li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .logout-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: #95a5a6;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .logout-btn:hover {
+    background: #7f8c8d;
+  }
+
+  .customer-info {
+    background: #e8f5e9;
+    padding: 20px;
+    border-radius: 6px;
+    margin: 20px 0;
+    border-left: 4px solid #4caf50;
+  }
+
+  .customer-info p {
+    margin: 5px 0;
+    color: #2c3e50;
+  }
+
+  @media (max-width: 768px) {
+    .pending-container {
+      margin: 20px;
+      padding: 30px 20px;
+    }
+
+    .pending-container h1 {
+      font-size: 24px;
+    }
+  }
+</style>
+
+<div class="pending-container">
+  {% if customer %}
+    {% assign customer_tags = customer.tags | split: ', ' %}
+    {% assign is_verified = false %}
+    {% assign is_pending = false %}
+    {% assign is_rejected = false %}
+
+    {% for tag in customer_tags %}
+      {% if tag == 'verified' %}
+        {% assign is_verified = true %}
+      {% elsif tag == 'pending_review' or tag == 'pending_verification' %}
+        {% assign is_pending = true %}
+      {% elsif tag == 'rejected' %}
+        {% assign is_rejected = true %}
+      {% endif %}
+    {% endfor %}
+
+    {% if is_verified %}
+      <div class="pending-icon">✅</div>
+      <h1>You're Verified!</h1>
+      <p class="subtitle">Your account has been approved</p>
+
+      <div class="status-box">
+        <h2>Welcome, {{ customer.first_name }}!</h2>
+        <p>Your medical credentials have been verified. You now have full access to our store.</p>
+      </div>
+
+      <a href="/" style="display: inline-block; margin-top: 20px; padding: 15px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 18px;">
+        Start Shopping
+      </a>
+
+    {% elsif is_rejected %}
+      <div class="pending-icon">❌</div>
+      <h1>Verification Issue</h1>
+      <p class="subtitle">We couldn't verify your credentials</p>
+
+      <div class="status-box status-rejected">
+        <h2>Action Required</h2>
+        <p>Unfortunately, we were unable to verify your medical license with the documentation provided.</p>
+      </div>
+
+      <div class="info-list">
+        <h3>Common reasons for rejection:</h3>
+        <ul>
+          <li>License does not match the name on your account</li>
+          <li>NPI number not visible or does not match</li>
+          <li>Document quality is too poor to read clearly</li>
+          <li>License appears to be expired or invalid</li>
+        </ul>
+      </div>
+
+      <p style="margin: 20px 0; color: #555;">Please contact our support team at <strong>support@yourstore.com</strong> for assistance.</p>
+
+      <a href="/account/logout" class="logout-btn">Log Out</a>
+
+    {% elsif is_pending %}
+      <div class="pending-icon">⏳</div>
+      <h1>Verification In Progress</h1>
+      <p class="subtitle">Your application is being reviewed</p>
+
+      <div class="customer-info">
+        <p><strong>Name:</strong> {{ customer.first_name }} {{ customer.last_name }}</p>
+        <p><strong>Email:</strong> {{ customer.email }}</p>
+      </div>
+
+      <div class="status-box status-pending">
+        <h2>What's Next?</h2>
+        <p>Our team is currently reviewing your medical license and credentials. This typically takes 1-2 business days.</p>
+      </div>
+
+      <div class="info-list">
+        <h3>📧 You'll receive an email when:</h3>
+        <ul>
+          <li>Your verification is approved (you can then access the full store)</li>
+          <li>We need additional information or documentation</li>
+          <li>There are any issues with your application</li>
+        </ul>
+      </div>
+
+      <div style="background: #fff3cd; padding: 20px; border-radius: 6px; border-left: 4px solid #ffc107; margin: 20px 0;">
+        <p style="margin: 0; color: #856404;">
+          <strong>📱 Need to update your information?</strong><br>
+          Please contact us at <strong>support@yourstore.com</strong>
+        </p>
+      </div>
+
+      <a href="/account/logout" class="logout-btn">Log Out</a>
+
+    {% else %}
+      <div class="pending-icon">⚠️</div>
+      <h1>Verification Status Unknown</h1>
+      <p class="subtitle">We couldn't determine your verification status</p>
+
+      <div class="status-box">
+        <h2>Please Contact Support</h2>
+        <p>There seems to be an issue with your account status. Please contact our support team for assistance.</p>
+      </div>
+
+      <p style="margin: 20px 0;">Email: <strong>support@yourstore.com</strong></p>
+
+      <a href="/account/logout" class="logout-btn">Log Out</a>
+    {% endif %}
+
+  {% else %}
+    <div class="pending-icon">🔒</div>
+    <h1>Access Restricted</h1>
+    <p class="subtitle">Medical professional verification required</p>
+
+    <div class="status-box">
+      <h2>This Store is for Medical Professionals Only</h2>
+      <p>To access our products, you must be a verified medical professional with a valid NPI and medical license.</p>
+    </div>
+
+    <div style="margin: 30px 0;">
+      <a href="/pages/medical-professional-signup" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 18px; margin-right: 10px;">
+        Sign Up
+      </a>
+      <a href="/account/login" style="display: inline-block; padding: 15px 40px; background: #95a5a6; color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 18px;">
+        Log In
+      </a>
+    </div>
+  {% endif %}
+</div>

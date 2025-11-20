@@ -1,0 +1,78 @@
+{% comment %}
+  SHOPIFY THEME VERIFICATION CODE
+
+  This code checks if customers are verified and redirects them if not.
+
+  INSTALLATION INSTRUCTIONS:
+
+  1. Go to Shopify Admin → Online Store → Themes
+  2. Click "Customize" on your active theme
+  3. Click the three dots (...) → "Edit code"
+  4. Find "theme.liquid" in the left sidebar (under Layout)
+  5. Paste this code RIGHT AFTER the <body> tag
+  6. Save
+
+  WHAT THIS DOES:
+  - Logged in customers WITHOUT "verified" tag → redirected to pending page
+  - Logged in customers WITH "verified" tag → can shop normally
+  - Not logged in visitors → redirected to signup page
+  - Allows access to: signup page, pending page, account pages, policies
+{% endcomment %}
+
+{% comment %} START MEDICAL VERIFICATION CHECK {% endcomment %}
+<script>
+(function() {
+  // Configuration
+  const SIGNUP_URL = '/pages/medical-professional-signup';
+  const PENDING_URL = '/pages/verification-pending';
+
+  // Pages that are always accessible (no verification needed)
+  const ALLOWED_PATHS = [
+    '/pages/medical-professional-signup',
+    '/pages/verification-pending',
+    '/account/login',
+    '/account/register',
+    '/account/reset',
+    '/policies/',
+    '/password'
+  ];
+
+  // Check if current page is allowed
+  function isAllowedPath() {
+    const currentPath = window.location.pathname;
+    return ALLOWED_PATHS.some(path => currentPath.startsWith(path));
+  }
+
+  // Run verification check
+  function checkVerification() {
+    // Don't check on allowed pages
+    if (isAllowedPath()) {
+      return;
+    }
+
+    {% if customer %}
+      // Customer is logged in
+      const customerTags = {{ customer.tags | json }};
+      const isVerified = customerTags.includes('verified');
+      const isPending = customerTags.includes('pending_review') || customerTags.includes('pending_verification');
+      const isRejected = customerTags.includes('rejected');
+
+      if (!isVerified) {
+        // Not verified - redirect to pending page
+        if (window.location.pathname !== PENDING_URL) {
+          window.location.href = PENDING_URL;
+        }
+      }
+    {% else %}
+      // Not logged in - redirect to signup page
+      if (window.location.pathname !== SIGNUP_URL) {
+        window.location.href = SIGNUP_URL;
+      }
+    {% endif %}
+  }
+
+  // Run check immediately
+  checkVerification();
+})();
+</script>
+{% comment %} END MEDICAL VERIFICATION CHECK {% endcomment %}

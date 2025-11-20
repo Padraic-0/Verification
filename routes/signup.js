@@ -86,7 +86,7 @@ router.post('/', async (req, res) => {
     const verificationUrl = `${process.env.FRONTEND_URL}/api/verify-email?token=${verificationToken}`;
 
     await resend.emails.send({
-      from: 'Verification <onboarding@resend.dev>',
+      from: 'Verification <noreply@paddydemo12345678.xyz>',
       to: email,
       subject: 'Verify your email address',
       html: `

@@ -470,7 +470,7 @@ router.post('/approve', async (req, res) => {
     }
 
     await resend.emails.send({
-      from: 'Verification <onboarding@resend.dev>',
+      from: 'Verification <noreply@paddydemo12345678.xyz>',
       to: customer.customer.email,
       subject: 'Verification Approved - Welcome!',
       html: `
@@ -533,7 +533,7 @@ router.post('/reject', async (req, res) => {
     }
 
     await resend.emails.send({
-      from: 'Verification <onboarding@resend.dev>',
+      from: 'Verification <noreply@paddydemo12345678.xyz>',
       to: customer.customer.email,
       subject: 'Verification Update Required',
       html: `

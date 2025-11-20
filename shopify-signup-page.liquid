@@ -6,8 +6,13 @@
   2. Create new page called "Medical Professional Signup"
   3. Switch to "Show HTML" mode
   4. Paste this code
-  5. Update API_URL to your Railway URL
+  5. Update BACKEND_URL below to your Railway URL
 {% endcomment %}
+
+<script>
+// ⚙️ CONFIGURATION - UPDATE THIS URL TO YOUR RAILWAY BACKEND
+const BACKEND_URL = 'https://your-app.up.railway.app';
+</script>
 
 <style>
   .verification-signup {
@@ -292,8 +297,7 @@
 </div>
 
 <script>
-  // UPDATE THIS TO YOUR RAILWAY URL
-  const API_URL = 'https://your-app.up.railway.app/api/signup';
+  const API_URL = BACKEND_URL + '/api/signup';
 
   const form = document.getElementById('signupForm');
   const submitBtn = document.getElementById('submitBtn');

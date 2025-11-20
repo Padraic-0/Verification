@@ -1,0 +1,410 @@
+{% comment %}
+  Medical Professional Verification Signup Page
+
+  Instructions:
+  1. Go to Shopify Admin → Online Store → Pages
+  2. Create new page called "Medical Professional Signup"
+  3. Switch to "Show HTML" mode
+  4. Paste this code
+  5. Update API_URL to your Railway URL
+{% endcomment %}
+
+<style>
+  .verification-signup {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  .verification-signup h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+
+  .verification-signup .subtitle {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 15px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+  }
+
+  .form-group .required {
+    color: #e74c3c;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #5c6ac4;
+  }
+
+  .form-group input.error {
+    border-color: #e74c3c;
+  }
+
+  .helper-text {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-top: 5px;
+  }
+
+  .info-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+  }
+
+  .info-box h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+  }
+
+  .info-box ul {
+    margin: 10px 0 0 20px;
+    padding: 0;
+  }
+
+  .info-box li {
+    margin-bottom: 5px;
+  }
+
+  .error-message {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .global-error {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    color: #c33;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .success-message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 20px;
+    border-radius: 4px;
+    text-align: center;
+    display: none;
+  }
+
+  .success-message h2 {
+    margin: 0 0 10px 0;
+    color: #155724;
+  }
+
+  .loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+    margin-left: 10px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 768px) {
+    .verification-signup {
+      margin: 20px;
+      padding: 25px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="verification-signup">
+  <h1>🏥 Medical Professional Signup</h1>
+  <p class="subtitle">Get verified to access our exclusive medical supplies</p>
+
+  <div class="info-box">
+    <h3>📋 What you'll need:</h3>
+    <ul>
+      <li>Valid NPI number (10 digits)</li>
+      <li>Medical license (uploaded after email verification)</li>
+      <li>Business information and address</li>
+    </ul>
+  </div>
+
+  <div class="global-error" id="globalError"></div>
+
+  <form id="signupForm">
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name <span class="required">*</span></label>
+        <input type="text" id="firstName" name="firstName" required>
+        <div class="error-message" id="firstNameError"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Last Name <span class="required">*</span></label>
+        <input type="text" id="lastName" name="lastName" required>
+        <div class="error-message" id="lastNameError"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Company/Practice Name <span class="required">*</span></label>
+      <input type="text" id="company" name="company" required>
+      <div class="error-message" id="companyError"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address <span class="required">*</span></label>
+      <input type="email" id="email" name="email" required>
+      <div class="error-message" id="emailError"></div>
+      <div class="helper-text">We'll send a verification link to this email</div>
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" name="phone" placeholder="+1 555-555-5555">
+      <div class="error-message" id="phoneError"></div>
+    </div>
+
+    <div class="form-group">
+      <label>NPI Number <span class="required">*</span></label>
+      <input type="text" id="npi" name="npi" maxlength="10" required>
+      <div class="error-message" id="npiError"></div>
+      <div class="helper-text">Don't have your NPI? <a href="https://npiregistry.cms.hhs.gov/" target="_blank">Look it up here</a></div>
+    </div>
+
+    <h3 style="margin: 30px 0 20px 0; color: #2c3e50;">Business Address</h3>
+
+    <div class="form-group">
+      <label>Street Address</label>
+      <input type="text" id="address1" name="address1" placeholder="123 Main St">
+    </div>
+
+    <div class="form-group">
+      <label>Apartment, Suite, etc.</label>
+      <input type="text" id="address2" name="address2" placeholder="Suite 100">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" id="city" name="city">
+      </div>
+
+      <div class="form-group">
+        <label>State/Province</label>
+        <input type="text" id="province" name="province" placeholder="CA">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>ZIP/Postal Code</label>
+        <input type="text" id="zip" name="zip">
+      </div>
+
+      <div class="form-group">
+        <label>Country</label>
+        <select id="country" name="country">
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      Create Account
+    </button>
+  </form>
+
+  <div class="success-message" id="successMessage">
+    <h2>✅ Account Created!</h2>
+    <p>Please check your email for a verification link.</p>
+  </div>
+</div>
+
+<script>
+  // UPDATE THIS TO YOUR RAILWAY URL
+  const API_URL = 'https://your-app.up.railway.app/api/signup';
+
+  const form = document.getElementById('signupForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const globalError = document.getElementById('globalError');
+  const successMessage = document.getElementById('successMessage');
+
+  // NPI input - only allow numbers
+  document.getElementById('npi').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '');
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrors();
+
+    const formData = {
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      company: document.getElementById('company').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      npi: document.getElementById('npi').value.trim(),
+      address1: document.getElementById('address1').value.trim(),
+      address2: document.getElementById('address2').value.trim(),
+      city: document.getElementById('city').value.trim(),
+      province: document.getElementById('province').value.trim(),
+      zip: document.getElementById('zip').value.trim(),
+      country: document.getElementById('country').value,
+    };
+
+    // Validation
+    let hasErrors = false;
+
+    if (!formData.firstName) {
+      showError('firstName', 'First name is required');
+      hasErrors = true;
+    }
+
+    if (!formData.lastName) {
+      showError('lastName', 'Last name is required');
+      hasErrors = true;
+    }
+
+    if (!formData.company) {
+      showError('company', 'Company name is required');
+      hasErrors = true;
+    }
+
+    if (!formData.email || !isValidEmail(formData.email)) {
+      showError('email', 'Please enter a valid email address');
+      hasErrors = true;
+    }
+
+    if (!formData.npi || !/^\d{10}$/.test(formData.npi)) {
+      showError('npi', 'NPI must be exactly 10 digits');
+      hasErrors = true;
+    }
+
+    if (hasErrors) return;
+
+    // Submit
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Creating Account<span class="loading"></span>';
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        form.style.display = 'none';
+        successMessage.style.display = 'block';
+      } else {
+        showGlobalError(result.error || 'Failed to create account. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    } catch (error) {
+      showGlobalError('Network error. Please check your connection and try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account';
+    }
+  });
+
+  function showError(fieldName, message) {
+    const input = document.getElementById(fieldName);
+    const errorDiv = document.getElementById(`${fieldName}Error`);
+    input.classList.add('error');
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+  }
+
+  function showGlobalError(message) {
+    globalError.textContent = message;
+    globalError.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('input, select').forEach(el => el.classList.remove('error'));
+    document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+    globalError.style.display = 'none';
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+</script>

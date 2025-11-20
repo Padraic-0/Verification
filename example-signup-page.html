@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Professional Signup</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #2c3e50;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .required {
+      color: #e74c3c;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #ecf0f1;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    input.error {
+      border-color: #e74c3c;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .info-box {
+      background-color: #e8f5e9;
+      border-left: 4px solid #4caf50;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .npi-info {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .npi-info a {
+      color: #856404;
+      font-weight: bold;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .success-message {
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .global-error {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .helper-text {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏥 Medical Professional Registration</h1>
+    <p class="subtitle">Create your account to access our exclusive store</p>
+
+    <div class="info-box">
+      <strong>What you'll need:</strong>
+      <ul style="margin: 10px 0 0 20px;">
+        <li>Valid NPI number</li>
+        <li>Medical license (you'll upload after email verification)</li>
+      </ul>
+    </div>
+
+    <div class="npi-info">
+      <strong>Don't have your NPI number?</strong><br>
+      <a href="https://npiregistry.cms.hhs.gov/" target="_blank">Look it up here →</a>
+    </div>
+
+    <div class="global-error" id="globalError"></div>
+
+    <form id="signupForm">
+      <div class="form-group">
+        <label for="firstName">First Name <span class="required">*</span></label>
+        <input type="text" id="firstName" name="firstName" required>
+        <div class="error-message" id="firstNameError"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Last Name <span class="required">*</span></label>
+        <input type="text" id="lastName" name="lastName" required>
+        <div class="error-message" id="lastNameError"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address <span class="required">*</span></label>
+        <input type="email" id="email" name="email" required>
+        <div class="error-message" id="emailError"></div>
+        <div class="helper-text">We'll send a verification link to this email</div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="555-1234">
+        <div class="error-message" id="phoneError"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="npi">NPI Number <span class="required">*</span></label>
+        <input type="text" id="npi" name="npi" pattern="[0-9]{10}" maxlength="10" required>
+        <div class="error-message" id="npiError"></div>
+        <div class="helper-text">Must be exactly 10 digits</div>
+      </div>
+
+      <button type="submit" id="submitBtn">
+        Create Account
+      </button>
+    </form>
+
+    <div class="success-message" id="successMessage">
+      <strong>✅ Account Created!</strong><br>
+      Please check your email for a verification link.
+    </div>
+  </div>
+
+  <script>
+    // UPDATE THIS URL TO YOUR BACKEND URL
+    const API_URL = 'http://localhost:3000/api/signup';
+
+    const form = document.getElementById('signupForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const globalError = document.getElementById('globalError');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Clear previous errors
+      clearErrors();
+
+      // Get form data
+      const formData = {
+        firstName: document.getElementById('firstName').value.trim(),
+        lastName: document.getElementById('lastName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        npi: document.getElementById('npi').value.trim(),
+      };
+
+      // Client-side validation
+      let hasErrors = false;
+
+      if (!formData.firstName) {
+        showError('firstName', 'First name is required');
+        hasErrors = true;
+      }
+
+      if (!formData.lastName) {
+        showError('lastName', 'Last name is required');
+        hasErrors = true;
+      }
+
+      if (!formData.email || !isValidEmail(formData.email)) {
+        showError('email', 'Please enter a valid email address');
+        hasErrors = true;
+      }
+
+      if (!formData.npi || !/^\d{10}$/.test(formData.npi)) {
+        showError('npi', 'NPI must be exactly 10 digits');
+        hasErrors = true;
+      }
+
+      if (hasErrors) return;
+
+      // Disable form
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Creating Account<span class="loading"></span>';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          form.style.display = 'none';
+          successMessage.style.display = 'block';
+        } else {
+          showGlobalError(result.error || 'Failed to create account. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account';
+        }
+      } catch (error) {
+        showGlobalError('Network error. Please check your connection and try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+
+    function showError(fieldName, message) {
+      const input = document.getElementById(fieldName);
+      const errorDiv = document.getElementById(`${fieldName}Error`);
+      input.classList.add('error');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+
+    function showGlobalError(message) {
+      globalError.textContent = message;
+      globalError.style.display = 'block';
+    }
+
+    function clearErrors() {
+      const inputs = document.querySelectorAll('input');
+      inputs.forEach(input => input.classList.remove('error'));
+
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(msg => msg.style.display = 'none');
+
+      globalError.style.display = 'none';
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // NPI input - only allow numbers
+    document.getElementById('npi').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+  </script>
+</body>
+</html>

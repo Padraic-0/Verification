@@ -1,13 +1,17 @@
-{% comment %}
-  Verification Pending Page
+{% assign customer_tags = customer.tags | split: ', ' %}
+{% assign is_verified = false %}
+{% assign is_pending = false %}
+{% assign is_rejected = false %}
 
-  Instructions:
-  1. Go to Shopify Admin → Online Store → Pages
-  2. Create new page called "Verification Pending"
-  3. Switch to "Show HTML" mode
-  4. Paste this code
-  5. Save
-{% endcomment %}
+{% for tag in customer_tags %}
+  {% if tag == 'verified' %}
+    {% assign is_verified = true %}
+  {% elsif tag == 'pending_review' or tag == 'pending_verification' %}
+    {% assign is_pending = true %}
+  {% elsif tag == 'rejected' %}
+    {% assign is_rejected = true %}
+  {% endif %}
+{% endfor %}
 
 <style>
   .pending-container {
@@ -83,22 +87,6 @@
     line-height: 1.6;
   }
 
-  .logout-btn {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 30px;
-    background: #95a5a6;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: 600;
-    transition: background 0.3s;
-  }
-
-  .logout-btn:hover {
-    background: #7f8c8d;
-  }
-
   .customer-info {
     background: #e8f5e9;
     padding: 20px;
@@ -126,21 +114,6 @@
 
 <div class="pending-container">
   {% if customer %}
-    {% assign customer_tags = customer.tags | split: ', ' %}
-    {% assign is_verified = false %}
-    {% assign is_pending = false %}
-    {% assign is_rejected = false %}
-
-    {% for tag in customer_tags %}
-      {% if tag == 'verified' %}
-        {% assign is_verified = true %}
-      {% elsif tag == 'pending_review' or tag == 'pending_verification' %}
-        {% assign is_pending = true %}
-      {% elsif tag == 'rejected' %}
-        {% assign is_rejected = true %}
-      {% endif %}
-    {% endfor %}
-
     {% if is_verified %}
       <div class="pending-icon">✅</div>
       <h1>You're Verified!</h1>
@@ -151,7 +124,7 @@
         <p>Your medical credentials have been verified. You now have full access to our store.</p>
       </div>
 
-      <a href="/" style="display: inline-block; margin-top: 20px; padding: 15px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 18px;">
+      <a href="{{ routes.root_url }}" class="button button--primary">
         Start Shopping
       </a>
 
@@ -177,7 +150,7 @@
 
       <p style="margin: 20px 0; color: #555;">Please contact our support team at <strong>support@yourstore.com</strong> for assistance.</p>
 
-      <a href="/account/logout" class="logout-btn">Log Out</a>
+      <a href="{{ routes.account_logout_url }}" class="button">Log Out</a>
 
     {% elsif is_pending %}
       <div class="pending-icon">⏳</div>
@@ -203,14 +176,7 @@
         </ul>
       </div>
 
-      <div style="background: #fff3cd; padding: 20px; border-radius: 6px; border-left: 4px solid #ffc107; margin: 20px 0;">
-        <p style="margin: 0; color: #856404;">
-          <strong>📱 Need to update your information?</strong><br>
-          Please contact us at <strong>support@yourstore.com</strong>
-        </p>
-      </div>
-
-      <a href="/account/logout" class="logout-btn">Log Out</a>
+      <a href="{{ routes.account_logout_url }}" class="button">Log Out</a>
 
     {% else %}
       <div class="pending-icon">⚠️</div>
@@ -224,7 +190,7 @@
 
       <p style="margin: 20px 0;">Email: <strong>support@yourstore.com</strong></p>
 
-      <a href="/account/logout" class="logout-btn">Log Out</a>
+      <a href="{{ routes.account_logout_url }}" class="button">Log Out</a>
     {% endif %}
 
   {% else %}
@@ -238,12 +204,19 @@
     </div>
 
     <div style="margin: 30px 0;">
-      <a href="/pages/medical-professional-signup" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 18px; margin-right: 10px;">
+      <a href="{{ routes.account_register_url }}" class="button button--primary">
         Sign Up
       </a>
-      <a href="/account/login" style="display: inline-block; padding: 15px 40px; background: #95a5a6; color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 18px;">
+      <a href="{{ routes.account_login_url }}" class="button">
         Log In
       </a>
     </div>
   {% endif %}
 </div>
+
+{% schema %}
+{
+  "name": "Verification Pending",
+  "settings": []
+}
+{% endschema %}

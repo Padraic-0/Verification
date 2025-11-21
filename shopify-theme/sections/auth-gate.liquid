@@ -1,0 +1,264 @@
+{% comment %}
+  AUTHENTICATION GATE
+  Add to theme.liquid right after <body> tag
+{% endcomment %}
+
+{% assign is_verified = false %}
+{% assign is_allowed_page = false %}
+
+{% comment %} Check if on allowed pages {% endcomment %}
+{% if request.page_type == 'login' or request.page_type == 'register' or request.page_type == 'reset_password' or request.page_type == 'policy' or template == 'password' %}
+  {% assign is_allowed_page = true %}
+{% endif %}
+
+{% comment %} Check if customer is verified {% endcomment %}
+{% if customer %}
+  {% assign customer_tags = customer.tags | split: ', ' %}
+  {% for tag in customer_tags %}
+    {% if tag == 'verified' %}
+      {% assign is_verified = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} Show gate if not verified and not on allowed page {% endcomment %}
+{% unless is_verified or is_allowed_page %}
+
+<style>
+  #shopify-section-sections--header-group,
+  #shopify-section-sections--footer-group,
+  #header-group,
+  #MainContent,
+  .content-for-layout,
+  main {
+    display: none !important;
+  }
+
+  body {
+    overflow: hidden !important;
+  }
+
+  .auth-gate {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .auth-gate__card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 450px;
+    width: 90%;
+    overflow: hidden;
+  }
+
+  .auth-gate__header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 30px;
+    text-align: center;
+  }
+
+  .auth-gate__header h1 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+  }
+
+  .auth-gate__header p {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .auth-gate__content {
+    padding: 40px 30px;
+  }
+
+  .auth-gate__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .auth-gate__btn {
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .auth-gate__btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .auth-gate__btn--primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .auth-gate__btn--primary:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .auth-gate__btn--secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+  }
+
+  .auth-gate__form {
+    display: none;
+    margin-top: 20px;
+  }
+
+  .auth-gate__form.active {
+    display: block;
+  }
+
+  .auth-gate__input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+
+  .auth-gate__input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .auth-gate__back {
+    background: none;
+    border: none;
+    color: #667eea;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 15px;
+    text-decoration: underline;
+  }
+
+  .auth-gate__status {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .auth-gate__status h3 {
+    margin: 0 0 10px 0;
+    color: #856404;
+  }
+
+  .auth-gate__status p {
+    margin: 0;
+    color: #856404;
+  }
+</style>
+
+{% if customer %}
+  {% comment %} Logged in but not verified {% endcomment %}
+  <div class="auth-gate">
+    <div class="auth-gate__card">
+      <div class="auth-gate__header">
+        <h1>🏥 Medical Verification Required</h1>
+        <p>Your account is pending verification</p>
+      </div>
+      <div class="auth-gate__content">
+        <div class="auth-gate__status">
+          <h3>⏳ Under Review</h3>
+          <p>Hi {{ customer.first_name }}, your medical license is being reviewed. You'll receive an email when approved.</p>
+        </div>
+        <a href="{{ routes.account_logout_url }}" class="auth-gate__btn auth-gate__btn--secondary" style="margin-top: 20px;">
+          Log Out
+        </a>
+      </div>
+    </div>
+  </div>
+{% else %}
+  {% comment %} Not logged in {% endcomment %}
+  <div class="auth-gate">
+    <div class="auth-gate__card">
+      <div class="auth-gate__header">
+        <h1>🏥 Medical Professionals Only</h1>
+        <p>Verification required to access our store</p>
+      </div>
+      <div class="auth-gate__content">
+        <div class="auth-gate__buttons" id="mainButtons">
+          <button class="auth-gate__btn auth-gate__btn--primary" onclick="showSignup()">
+            Sign Up
+          </button>
+          <button class="auth-gate__btn auth-gate__btn--secondary" onclick="showLogin()">
+            Log In
+          </button>
+        </div>
+
+        <form id="signupForm" class="auth-gate__form" action="{{ routes.account_url }}" method="post">
+          <input type="hidden" name="form_type" value="create_customer">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="text" name="customer[first_name]" placeholder="First Name" class="auth-gate__input" required>
+          <input type="text" name="customer[last_name]" placeholder="Last Name" class="auth-gate__input" required>
+          <input type="email" name="customer[email]" placeholder="Email" class="auth-gate__input" required>
+          <input type="password" name="customer[password]" placeholder="Password" class="auth-gate__input" required>
+          <button type="submit" class="auth-gate__btn auth-gate__btn--primary">Create Account</button>
+          <button type="button" class="auth-gate__back" onclick="showMain()">← Back</button>
+        </form>
+
+        <form id="loginForm" class="auth-gate__form" action="{{ routes.account_login_url }}" method="post">
+          <input type="hidden" name="form_type" value="customer_login">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="email" name="customer[email]" placeholder="Email" class="auth-gate__input" required>
+          <input type="password" name="customer[password]" placeholder="Password" class="auth-gate__input" required>
+          <button type="submit" class="auth-gate__btn auth-gate__btn--primary">Log In</button>
+          <button type="button" class="auth-gate__back" onclick="showMain()">← Back</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showSignup() {
+      document.getElementById('mainButtons').style.display = 'none';
+      document.getElementById('signupForm').classList.add('active');
+      document.getElementById('loginForm').classList.remove('active');
+    }
+    function showLogin() {
+      document.getElementById('mainButtons').style.display = 'none';
+      document.getElementById('loginForm').classList.add('active');
+      document.getElementById('signupForm').classList.remove('active');
+    }
+    function showMain() {
+      document.getElementById('mainButtons').style.display = 'flex';
+      document.getElementById('signupForm').classList.remove('active');
+      document.getElementById('loginForm').classList.remove('active');
+    }
+  </script>
+{% endif %}
+
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Authentication Gate",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,8 @@
+{
+  "sections": {
+    "pending-page-content": {
+      "type": "pending-page"
+    }
+  },
+  "order": ["pending-page-content"]
+}

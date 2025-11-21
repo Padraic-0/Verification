@@ -69,8 +69,8 @@ curl -X POST http://localhost:3000/api/signup \
   -d '{
     "firstName": "Test",
     "lastName": "Doctor",
-    "email": "YOUR_EMAIL@example.com",
-    "phone": "555-1234",
+    "email": "berginpadraic@gmail.com",
+    "phone": "541-555-1234",
     "npi": "1234567890"
   }'
 \`\`\`

@@ -1,0 +1,7 @@
+shopify-theme/
+*.liquid
+*.md
+CORRECTED-*
+FIXED-*
+EXAMPLE-*
+test-api.sh

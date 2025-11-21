@@ -7,6 +7,33 @@ const shopifyClient = require('../utils/shopify');
 const router = express.Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Basic authentication middleware
+function requireAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin Panel"');
+    return res.status(401).send('Authentication required');
+  }
+
+  const base64Credentials = authHeader.split(' ')[1];
+  const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
+  const [username, password] = credentials.split(':');
+
+  const validUsername = process.env.ADMIN_USERNAME || 'admin';
+  const validPassword = process.env.ADMIN_PASSWORD || 'admin';
+
+  if (username === validUsername && password === validPassword) {
+    next();
+  } else {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin Panel"');
+    return res.status(401).send('Invalid credentials');
+  }
+}
+
+// Apply authentication to all admin routes
+router.use(requireAuth);
+
 router.get('/', async (req, res) => {
   try {
     const pendingCustomers = await shopifyClient.searchCustomers('tag:pending_review');

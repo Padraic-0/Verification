@@ -1,7 +1,7 @@
 // routes/check-customer.js
 const express = require("express");
 const router = express.Router();
-const { getCustomerByEmail } = require("../utils/shopify");
+const shopifyClient = require("../utils/shopify");
 
 router.post("/", async (req, res) => {
   try {

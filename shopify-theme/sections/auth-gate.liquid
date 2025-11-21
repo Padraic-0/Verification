@@ -203,55 +203,17 @@
         <p>Verification required to access our store</p>
       </div>
       <div class="auth-gate__content">
-        <div class="auth-gate__buttons" id="mainButtons">
-          <button class="auth-gate__btn auth-gate__btn--primary" onclick="showSignup()">
-            Sign Up
-          </button>
-          <button class="auth-gate__btn auth-gate__btn--secondary" onclick="showLogin()">
+        <div class="auth-gate__buttons">
+          <a href="/pages/verification-signup" class="auth-gate__btn auth-gate__btn--primary">
+            Sign Up for Verification
+          </a>
+          <a href="{{ routes.account_login_url }}" class="auth-gate__btn auth-gate__btn--secondary">
             Log In
-          </button>
+          </a>
         </div>
-
-        <form id="signupForm" class="auth-gate__form" action="{{ routes.account_url }}" method="post">
-          <input type="hidden" name="form_type" value="create_customer">
-          <input type="hidden" name="utf8" value="✓">
-          <input type="text" name="customer[first_name]" placeholder="First Name" class="auth-gate__input" required>
-          <input type="text" name="customer[last_name]" placeholder="Last Name" class="auth-gate__input" required>
-          <input type="email" name="customer[email]" placeholder="Email" class="auth-gate__input" required>
-          <input type="password" name="customer[password]" placeholder="Password" class="auth-gate__input" required>
-          <button type="submit" class="auth-gate__btn auth-gate__btn--primary">Create Account</button>
-          <button type="button" class="auth-gate__back" onclick="showMain()">← Back</button>
-        </form>
-
-        <form id="loginForm" class="auth-gate__form" action="{{ routes.account_login_url }}" method="post">
-          <input type="hidden" name="form_type" value="customer_login">
-          <input type="hidden" name="utf8" value="✓">
-          <input type="email" name="customer[email]" placeholder="Email" class="auth-gate__input" required>
-          <input type="password" name="customer[password]" placeholder="Password" class="auth-gate__input" required>
-          <button type="submit" class="auth-gate__btn auth-gate__btn--primary">Log In</button>
-          <button type="button" class="auth-gate__back" onclick="showMain()">← Back</button>
-        </form>
       </div>
     </div>
   </div>
-
-  <script>
-    function showSignup() {
-      document.getElementById('mainButtons').style.display = 'none';
-      document.getElementById('signupForm').classList.add('active');
-      document.getElementById('loginForm').classList.remove('active');
-    }
-    function showLogin() {
-      document.getElementById('mainButtons').style.display = 'none';
-      document.getElementById('loginForm').classList.add('active');
-      document.getElementById('signupForm').classList.remove('active');
-    }
-    function showMain() {
-      document.getElementById('mainButtons').style.display = 'flex';
-      document.getElementById('signupForm').classList.remove('active');
-      document.getElementById('loginForm').classList.remove('active');
-    }
-  </script>
 {% endif %}
 
 {% endunless %}

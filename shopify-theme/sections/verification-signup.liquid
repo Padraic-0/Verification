@@ -1,0 +1,317 @@
+{% comment %}
+  VERIFICATION SIGNUP FORM
+  Collects NPI and medical professional info
+  Submits to Railway backend for verification
+{% endcomment %}
+
+<style>
+  .verification-signup-container {
+    max-width: 700px;
+    margin: 60px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  .verification-signup-container h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .verification-signup-container .subtitle {
+    font-size: 16px;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .verification-form {
+    display: grid;
+    gap: 20px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .form-group label .required {
+    color: #e74c3c;
+    margin-left: 3px;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-top: 10px;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .error-message {
+    background: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .success-message {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 20px;
+    border-radius: 6px;
+    text-align: center;
+    display: none;
+  }
+
+  .success-message h2 {
+    color: #2e7d32;
+    margin: 0 0 10px 0;
+  }
+
+  .loading-spinner {
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  @media (max-width: 768px) {
+    .verification-signup-container {
+      margin: 20px;
+      padding: 25px 20px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .verification-signup-container h1 {
+      font-size: 24px;
+    }
+  }
+</style>
+
+<div class="verification-signup-container">
+  <h1>🏥 Medical Professional Verification</h1>
+  <p class="subtitle">Register your credentials to access our store</p>
+
+  <div id="errorMessage" class="error-message"></div>
+  <div id="successMessage" class="success-message">
+    <h2>✅ Registration Submitted!</h2>
+    <p>Please check your email for a verification link to continue the process.</p>
+  </div>
+
+  <form id="verificationForm" class="verification-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="firstName">First Name<span class="required">*</span></label>
+        <input type="text" id="firstName" name="firstName" required>
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name<span class="required">*</span></label>
+        <input type="text" id="lastName" name="lastName" required>
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label for="company">Company/Practice Name<span class="required">*</span></label>
+      <input type="text" id="company" name="company" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="email">Email Address<span class="required">*</span></label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567">
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label for="npi">NPI Number (10 digits)<span class="required">*</span></label>
+      <input type="text" id="npi" name="npi" required pattern="\d{10}" maxlength="10" placeholder="1234567890">
+    </div>
+
+    <div class="form-group full-width">
+      <label for="address1">Street Address<span class="required">*</span></label>
+      <input type="text" id="address1" name="address1" required>
+    </div>
+
+    <div class="form-group full-width">
+      <label for="address2">Address Line 2 (Suite, Unit, etc.)</label>
+      <input type="text" id="address2" name="address2">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="city">City<span class="required">*</span></label>
+        <input type="text" id="city" name="city" required>
+      </div>
+      <div class="form-group">
+        <label for="province">State/Province<span class="required">*</span></label>
+        <input type="text" id="province" name="province" required placeholder="CA">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="zip">ZIP/Postal Code<span class="required">*</span></label>
+        <input type="text" id="zip" name="zip" required>
+      </div>
+      <div class="form-group">
+        <label for="country">Country<span class="required">*</span></label>
+        <select id="country" name="country" required>
+          <option value="US" selected>United States</option>
+          <option value="CA">Canada</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      Submit Verification Request
+    </button>
+  </form>
+
+  <div class="loading-spinner" id="loadingSpinner">
+    <p>⏳ Submitting your application...</p>
+  </div>
+</div>
+
+<script>
+const BACKEND_URL = 'https://verification-production-3ad5.up.railway.app';
+const API_URL = BACKEND_URL + '/api/signup';
+
+const form = document.getElementById('verificationForm');
+const submitBtn = document.getElementById('submitBtn');
+const errorMessage = document.getElementById('errorMessage');
+const successMessage = document.getElementById('successMessage');
+const loadingSpinner = document.getElementById('loadingSpinner');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  // Clear previous messages
+  errorMessage.style.display = 'none';
+  successMessage.style.display = 'none';
+
+  // Disable submit button
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+  form.style.display = 'none';
+  loadingSpinner.style.display = 'block';
+
+  // Collect form data
+  const formData = {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    company: document.getElementById('company').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    npi: document.getElementById('npi').value.trim(),
+    address1: document.getElementById('address1').value.trim(),
+    address2: document.getElementById('address2').value.trim(),
+    city: document.getElementById('city').value.trim(),
+    province: document.getElementById('province').value.trim(),
+    zip: document.getElementById('zip').value.trim(),
+    country: document.getElementById('country').value,
+  };
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Success
+      loadingSpinner.style.display = 'none';
+      successMessage.style.display = 'block';
+      form.reset();
+    } else {
+      // Error from backend
+      throw new Error(data.error || 'Failed to submit verification request');
+    }
+  } catch (error) {
+    console.error('Submission error:', error);
+
+    loadingSpinner.style.display = 'none';
+    form.style.display = 'grid';
+    errorMessage.textContent = error.message || 'An error occurred. Please try again.';
+    errorMessage.style.display = 'block';
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Verification Request';
+  }
+});
+
+// NPI validation on input
+document.getElementById('npi').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+});
+</script>
+
+{% schema %}
+{
+  "name": "Verification Signup",
+  "settings": []
+}
+{% endschema %}

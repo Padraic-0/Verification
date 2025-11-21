@@ -1,0 +1,10 @@
+{
+  "sections": {
+    "verification-signup-content": {
+      "type": "verification-signup"
+    }
+  },
+  "order": [
+    "verification-signup-content"
+  ]
+}

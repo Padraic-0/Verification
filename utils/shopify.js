@@ -11,7 +11,7 @@ class ShopifyClient {
       apiSecretKey: process.env.SHOPIFY_CLIENT_SECRET,
       scopes: ['read_customers', 'write_customers'],
       hostName: process.env.SHOPIFY_STORE_URL.replace('https://', '').replace('http://', ''),
-      apiVersion: '2024-10',
+      apiVersion: '2025-10',
       isEmbeddedApp: false,
     });
   }
@@ -59,7 +59,7 @@ class ShopifyClient {
   async makeRequest(endpoint, options = {}) {
     await this.ensureValidToken();
 
-    const url = `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-10${endpoint}`;
+    const url = `https://${process.env.SHOPIFY_STORE_URL}/admin/api/2025-10${endpoint}`;
 
     const response = await fetch(url, {
       ...options,
@@ -152,15 +152,16 @@ class ShopifyClient {
       }),
     });
   }
-  
+
   async getCustomerByEmail(email) {
-    const response = await this.searchCustomers(`email:${email}`);
-  
-    if (!response.customers || response.customers.length === 0) {
+    try {
+      const response = await this.searchCustomers(`email:${email}`);
+      if (!response?.customers || response.customers.length === 0) return null;
+      return response.customers[0];
+    } catch (err) {
+      console.error('getCustomerByEmail error:', err);
       return null;
     }
-  
-    return response.customers[0];
   }
 }
 

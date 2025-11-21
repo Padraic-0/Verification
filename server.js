@@ -7,6 +7,7 @@ const signupRouter = require('./routes/signup');
 const verifyEmailRouter = require('./routes/verify-email');
 const uploadRouter = require('./routes/upload-license');
 const adminRouter = require('./routes/admin');
+const checkCustomerRouter = require('./routes/check-customer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use('/api/signup', signupRouter);
 app.use('/api/verify-email', verifyEmailRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/check-customer', checkCustomerRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -152,6 +152,16 @@ class ShopifyClient {
       }),
     });
   }
+  
+  async getCustomerByEmail(email) {
+    const response = await this.searchCustomers(`email:${email}`);
+  
+    if (!response.customers || response.customers.length === 0) {
+      return null;
+    }
+  
+    return response.customers[0];
+  }
 }
 
 const shopifyClient = new ShopifyClient();

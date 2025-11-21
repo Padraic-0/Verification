@@ -11,15 +11,16 @@
   {% assign is_allowed_page = true %}
 {% endif %}
 
+{% comment %} Allow access to verification pages {% endcomment %}
+{% if page.handle == 'verification-signup' or page.handle == 'verification-pending' %}
+  {% assign is_allowed_page = true %}
+{% endif %}
+
 {% comment %} Check if customer is verified {% endcomment %}
 {% if customer %}
-  {% assign customer_tags = customer.tags | split: ', ' %}
-  {% for tag in customer_tags %}
-    {% if tag == 'verified' %}
-      {% assign is_verified = true %}
-      {% break %}
-    {% endif %}
-  {% endfor %}
+  {% if customer.tags contains 'verified' %}
+    {% assign is_verified = true %}
+  {% endif %}
 {% endif %}
 
 {% comment %} Show gate if not verified and not on allowed page {% endcomment %}
@@ -207,7 +208,7 @@
           <a href="/pages/verification-signup" class="auth-gate__btn auth-gate__btn--primary">
             Sign Up for Verification
           </a>
-          <a href="{{ routes.account_login_url }}" class="auth-gate__btn auth-gate__btn--secondary">
+          <a href="{{ routes.account_login_url }}?return_url={{ routes.root_url | url_encode }}" class="auth-gate__btn auth-gate__btn--secondary">
             Log In
           </a>
         </div>
